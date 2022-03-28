@@ -4,7 +4,7 @@ import pygame
 import requests
 from bs4 import BeautifulSoup
 import threading
-import psutil
+# import psutil
 
 # Settings
 loginData = {
@@ -48,7 +48,7 @@ stats = {}
 pygame.init() # intialize the library
 pygame.font.init()
 
-# fpsClock = pygame.time.Clock()
+fpsClock = pygame.time.Clock()
 
 BACKGROUND = (0, 0, 0)
 TEXTCOLOR = (255, 255, 255)
@@ -59,6 +59,8 @@ bodyFont = pygame.font.SysFont(defaultFont, 50)
 
 # screen = pygame.display.set_mode((320 * 2, 240 * 2))
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+pygame.mouse.set_visible(False)
 
 def drawText(font, text, pos, color):
   textSurface = font.render(text, False, color)
@@ -96,7 +98,7 @@ while running:
     if y == 0:
       drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
 
-    cpu = psutil.cpu_percent()
+    cpu = 10#psutil.cpu_percent()
     drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
@@ -104,7 +106,7 @@ while running:
     # Flip the display
     pygame.display.flip()
     tick += 1
-    # fpsClock.tick(FPS)
+    fpsClock.tick(FPS)
 
 # Quit the program
 pygame.quit()
