@@ -91,6 +91,9 @@ while running:
       drawText(bodyFont, value, (250, 130 + y * 60), TEXTCOLOR)
       y += 1
 
+    if y == 0:
+      drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
+
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
 
     # Flip the display
