@@ -4,7 +4,7 @@ import pygame
 pygame.init() # intialize the library
 pygame.font.init()
 
-defaultFont = pygame.font.SysFont('Comic Sans MS', 50)
+defaultFont = pygame.font.SysFont(None, 50)
 textSurface = defaultFont.render('Some Text', False, (0, 0, 0))
 
 # Set up the drawing window
