@@ -5,6 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import threading
 import psutil
+import time
+
+time.sleep(10) # wait for network
 
 # Settings
 loginData = {
