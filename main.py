@@ -4,7 +4,7 @@ import pygame
 import requests
 from bs4 import BeautifulSoup
 import threading
-# import psutil
+import psutil
 
 # Settings
 loginData = {
@@ -17,33 +17,33 @@ FPS = 10
 
 stats = {}
 
-# s = requests.Session()
-# loginPage = s.get("https://itch.io/login")
-# soup = BeautifulSoup(loginPage.text, "html.parser")
-# csrfToken = soup.select('meta[name="csrf_token"]')[0]["value"]
+s = requests.Session()
+loginPage = s.get("https://itch.io/login")
+soup = BeautifulSoup(loginPage.text, "html.parser")
+csrfToken = soup.select('meta[name="csrf_token"]')[0]["value"]
 
-# loginData["csrf_token"] = csrfToken
+loginData["csrf_token"] = csrfToken
 
-# s.post("https://itch.io/login", data = loginData)
+s.post("https://itch.io/login", data = loginData)
 
-# def getStats():
-#   print("Fetching stats...")
+def getStats():
+  print("Fetching stats...")
 
-#   dashboard = s.get("https://itch.io/dashboard")
-#   soup = BeautifulSoup(dashboard.text, "html.parser")
-#   for div in soup.select(".stat_box"):
-#     stats[div.select(".stat_label")[0].text.lower().strip()] = div.select(".stat_value")[0].text
+  dashboard = s.get("https://itch.io/dashboard")
+  soup = BeautifulSoup(dashboard.text, "html.parser")
+  for div in soup.select(".stat_box"):
+    stats[div.select(".stat_label")[0].text.lower().strip()] = div.select(".stat_value")[0].text
 
-# def set_interval(func, sec):
-#   def func_wrapper():
-#     global fetchInterval
-#     fetchInterval = set_interval(func, sec)
-#     func()
-#   t = threading.Timer(sec, func_wrapper)
-#   t.start()
-#   return t
+def set_interval(func, sec):
+  def func_wrapper():
+    global fetchInterval
+    fetchInterval = set_interval(func, sec)
+    func()
+  t = threading.Timer(sec, func_wrapper)
+  t.start()
+  return t
 
-# fetchInterval = set_interval(getStats, fetchStatsTime)
+fetchInterval = set_interval(getStats, fetchStatsTime)
 
 pygame.init() # intialize the library
 pygame.font.init()
@@ -98,7 +98,7 @@ while running:
     if y == 0:
       drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
 
-    cpu = 10#psutil.cpu_percent()
+    cpu = psutil.cpu_percent()
     drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
