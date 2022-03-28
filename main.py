@@ -4,6 +4,7 @@ import pygame
 import requests
 from bs4 import BeautifulSoup
 import threading
+import psutil
 
 # Settings
 loginData = {
@@ -93,6 +94,9 @@ while running:
 
     if y == 0:
       drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
+
+    cpu = psutil.cpu_percent()
+    drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
 
