@@ -4,7 +4,7 @@ import pygame
 import requests
 from bs4 import BeautifulSoup
 import threading
-import psutil
+# import psutil
 import time
 
 time.sleep(10) # wait for network
@@ -83,6 +83,9 @@ while running:
           if event.key == pygame.K_TAB or event.key == pygame.K_ESCAPE:
             running = False
 
+        if event.type == pygame.MOUSEBUTTONUP:
+          running = False
+
     # Fill the background with white (R, G, B) (also if you dont like lightmode, just replace it with (0,0,0))
     screen.fill(BACKGROUND)
     pygame.draw.rect(screen, (20, 20, 20), pygame.Rect(0, 0, 320 * 2, 240 * 2))
@@ -101,7 +104,7 @@ while running:
     if y == 0:
       drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
 
-    cpu = psutil.cpu_percent()
+    cpu = 0#psutil.cpu_percent()
     drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
