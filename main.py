@@ -48,7 +48,7 @@ stats = {}
 pygame.init() # intialize the library
 pygame.font.init()
 
-fpsClock = pygame.time.Clock()
+# fpsClock = pygame.time.Clock()
 
 BACKGROUND = (0, 0, 0)
 TEXTCOLOR = (255, 255, 255)
@@ -104,7 +104,7 @@ while running:
     # Flip the display
     pygame.display.flip()
     tick += 1
-    fpsClock.tick(FPS)
+    # fpsClock.tick(FPS)
 
 # Quit the program
 pygame.quit()
