@@ -135,7 +135,8 @@ def createStockChart():
   stockTimer = threading.Timer(5, createStockChart)
   stockTimer.start()
 
-createStockChart()
+stockTimer = threading.Timer(5, createStockChart)
+stockTimer.start()
 
 tick = 0
 running = True
