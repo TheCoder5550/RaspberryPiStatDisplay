@@ -6,8 +6,14 @@ from bs4 import BeautifulSoup
 import threading
 # import psutil
 import time
+import yfinance as yf
 
-time.sleep(10) # wait for network
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.backends.backend_agg as agg
+import pylab
+
+# time.sleep(10) # wait for network
 
 # Settings
 loginData = {
@@ -20,33 +26,33 @@ FPS = 10
 
 stats = {}
 
-s = requests.Session()
-loginPage = s.get("https://itch.io/login")
-soup = BeautifulSoup(loginPage.text, "html.parser")
-csrfToken = soup.select('meta[name="csrf_token"]')[0]["value"]
+# s = requests.Session()
+# loginPage = s.get("https://itch.io/login")
+# soup = BeautifulSoup(loginPage.text, "html.parser")
+# csrfToken = soup.select('meta[name="csrf_token"]')[0]["value"]
 
-loginData["csrf_token"] = csrfToken
+# loginData["csrf_token"] = csrfToken
 
-s.post("https://itch.io/login", data = loginData)
+# s.post("https://itch.io/login", data = loginData)
 
-def getStats():
-  print("Fetching stats...")
+# def getStats():
+#   print("Fetching stats...")
 
-  dashboard = s.get("https://itch.io/dashboard")
-  soup = BeautifulSoup(dashboard.text, "html.parser")
-  for div in soup.select(".stat_box"):
-    stats[div.select(".stat_label")[0].text.lower().strip()] = div.select(".stat_value")[0].text
+#   dashboard = s.get("https://itch.io/dashboard")
+#   soup = BeautifulSoup(dashboard.text, "html.parser")
+#   for div in soup.select(".stat_box"):
+#     stats[div.select(".stat_label")[0].text.lower().strip()] = div.select(".stat_value")[0].text
 
-def set_interval(func, sec):
-  def func_wrapper():
-    global fetchInterval
-    fetchInterval = set_interval(func, sec)
-    func()
-  t = threading.Timer(sec, func_wrapper)
-  t.start()
-  return t
+# def set_interval(func, sec):
+#   def func_wrapper():
+#     global fetchInterval
+#     fetchInterval = set_interval(func, sec)
+#     func()
+#   t = threading.Timer(sec, func_wrapper)
+#   t.start()
+#   return t
 
-fetchInterval = set_interval(getStats, fetchStatsTime)
+# fetchInterval = set_interval(getStats, fetchStatsTime)
 
 pygame.init() # intialize the library
 pygame.font.init()
@@ -57,17 +63,78 @@ BACKGROUND = (0, 0, 0)
 TEXTCOLOR = (255, 255, 255)
 
 defaultFont = None
-headerFont = pygame.font.SysFont(defaultFont, 120)
+headerFont = pygame.font.SysFont(defaultFont, 80)
 bodyFont = pygame.font.SysFont(defaultFont, 50)
 
-# screen = pygame.display.set_mode((320 * 2, 240 * 2))
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((320 * 2, 240 * 2))
+# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 pygame.mouse.set_visible(False)
+
+def remap(x, in_min, in_max, out_min, out_max):
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def drawText(font, text, pos, color):
   textSurface = font.render(text, False, color)
   screen.blit(textSurface, pos)
+
+stock = "VOLV-B.ST"
+
+oldFig = None
+stockTimer = None
+currentPrice = 0
+
+def createStockChart():
+  df = yf.download(tickers=stock, period='1d', interval='1m')
+
+  global currentPrice
+  currentPrice = df["Close"][-1]
+  currentPrice = float("{0:.2f}".format(currentPrice))
+
+  # matplotlib.rcParams.update({'text.color': "red",
+  #                     'axes.labelcolor': "green"})
+
+  fig = pylab.figure(figsize=[6, 3], # Inches
+                    dpi=100,        # 100 dots per inch, so the resulting buffer is 400x400 pixels
+                    )
+
+  global oldFig
+  if oldFig:
+    pylab.close(oldFig)
+
+  oldFig = fig
+
+  ax = fig.gca()
+
+  remappedBackground = tuple(c / 255 for c in BACKGROUND)
+  ax.set_facecolor(remappedBackground)
+  fig.set_facecolor(remappedBackground)
+
+  ax.spines['bottom'].set_color('white')
+  # ax.spines['top'].set_color('white')
+  ax.spines['left'].set_color('white')
+  # ax.spines['right'].set_color('white')
+
+  # ax.xaxis.label.set_color('red')
+  ax.tick_params(axis='x', colors='white')
+  ax.tick_params(axis='y', colors='white')
+
+  ax.plot(df["Close"], linewidth=2)
+
+  canvas = agg.FigureCanvasAgg(fig)
+  canvas.draw()
+  renderer = canvas.get_renderer()
+  raw_data = renderer.tostring_rgb()
+  size = canvas.get_width_height()
+
+  global stockSurface
+  stockSurface = pygame.image.fromstring(raw_data, size, "RGB")
+
+  global stockTimer
+  stockTimer = threading.Timer(5, createStockChart)
+  stockTimer.start()
+
+createStockChart()
 
 tick = 0
 running = True
@@ -88,7 +155,6 @@ while running:
 
     # Fill the background with white (R, G, B) (also if you dont like lightmode, just replace it with (0,0,0))
     screen.fill(BACKGROUND)
-    pygame.draw.rect(screen, (20, 20, 20), pygame.Rect(0, 0, 320 * 2, 240 * 2))
 
     # Draw a blue circle in the center
     pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
@@ -107,6 +173,11 @@ while running:
     cpu = 0#psutil.cpu_percent()
     drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
+    screen.blit(stockSurface, (0, 130))
+
+    drawText(bodyFont, stock, (10, 90), TEXTCOLOR)
+    drawText(bodyFont, str(currentPrice) + " SEK", (250, 90), TEXTCOLOR)
+
     # drawText(bodyFont, 'Some Text ' + str(tick), (10, 130), TEXTCOLOR)
 
     # Flip the display
@@ -116,4 +187,4 @@ while running:
 
 # Quit the program
 pygame.quit()
-fetchInterval.cancel()
+stockTimer.cancel()
