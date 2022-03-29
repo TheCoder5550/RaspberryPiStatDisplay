@@ -94,7 +94,7 @@ def createStockChart():
   # matplotlib.rcParams.update({'text.color': "red",
   #                     'axes.labelcolor': "green"})
 
-  fig = pylab.figure(figsize=[6, 3], # Inches
+  fig = pylab.figure(figsize=[7, 3], # Inches
                     dpi=100,        # 100 dots per inch, so the resulting buffer is 400x400 pixels
                     )
 
@@ -119,7 +119,7 @@ def createStockChart():
   ax.tick_params(axis='x', colors='white')
   ax.tick_params(axis='y', colors='white')
 
-  ax.plot(df["Close"], linewidth=2)
+  ax.plot(df["Close"], linewidth=3)
 
   canvas = agg.FigureCanvasAgg(fig)
   canvas.draw()
@@ -157,23 +157,23 @@ while running:
     screen.fill(BACKGROUND)
 
     # Draw a blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+    # pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
 
     drawText(headerFont, 'Dashboard', (10, 10), TEXTCOLOR)
 
-    y = 0
-    for key, value in stats.items():
-      drawText(bodyFont, key.title(), (10, 130 + y * 60), TEXTCOLOR)
-      drawText(bodyFont, value, (250, 130 + y * 60), TEXTCOLOR)
-      y += 1
+    # y = 0
+    # for key, value in stats.items():
+    #   drawText(bodyFont, key.title(), (10, 130 + y * 60), TEXTCOLOR)
+    #   drawText(bodyFont, value, (250, 130 + y * 60), TEXTCOLOR)
+    #   y += 1
 
-    if y == 0:
-      drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
+    # if y == 0:
+    #   drawText(bodyFont, "Waiting for stats...", (10, 130), TEXTCOLOR)
 
-    cpu = 0#psutil.cpu_percent()
-    drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
+    # cpu = 0#psutil.cpu_percent()
+    # drawText(bodyFont, "CPU: " + str(cpu) + "%", (10, 400), TEXTCOLOR)
 
-    screen.blit(stockSurface, (0, 130))
+    screen.blit(stockSurface, (-20, 130))
 
     drawText(bodyFont, stock, (10, 90), TEXTCOLOR)
     drawText(bodyFont, str(currentPrice) + " SEK", (250, 90), TEXTCOLOR)
