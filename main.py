@@ -87,7 +87,7 @@ currentPrice = 0
 def createStockChart():
   df = yf.download(tickers=stock, period='1d', interval='1m')
 
-  if df["Close"]:
+  if "Close" in df:
     global currentPrice
     currentPrice = df["Close"][-1]
     currentPrice = float("{0:.2f}".format(currentPrice))
