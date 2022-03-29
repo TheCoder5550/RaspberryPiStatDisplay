@@ -87,48 +87,49 @@ currentPrice = 0
 def createStockChart():
   df = yf.download(tickers=stock, period='1d', interval='1m')
 
-  global currentPrice
-  currentPrice = df["Close"][-1]
-  currentPrice = float("{0:.2f}".format(currentPrice))
+  if df["Close"]:
+    global currentPrice
+    currentPrice = df["Close"][-1]
+    currentPrice = float("{0:.2f}".format(currentPrice))
 
-  # matplotlib.rcParams.update({'text.color': "red",
-  #                     'axes.labelcolor': "green"})
+    # matplotlib.rcParams.update({'text.color': "red",
+    #                     'axes.labelcolor': "green"})
 
-  fig = pylab.figure(figsize=[7, 3], # Inches
-                    dpi=100,        # 100 dots per inch, so the resulting buffer is 400x400 pixels
-                    )
+    fig = pylab.figure(figsize=[7, 3], # Inches
+                      dpi=100,        # 100 dots per inch, so the resulting buffer is 400x400 pixels
+                      )
 
-  global oldFig
-  if oldFig:
-    pylab.close(oldFig)
+    global oldFig
+    if oldFig:
+      pylab.close(oldFig)
 
-  oldFig = fig
+    oldFig = fig
 
-  ax = fig.gca()
+    ax = fig.gca()
 
-  remappedBackground = tuple(c / 255 for c in BACKGROUND)
-  ax.set_facecolor(remappedBackground)
-  fig.set_facecolor(remappedBackground)
+    remappedBackground = tuple(c / 255 for c in BACKGROUND)
+    ax.set_facecolor(remappedBackground)
+    fig.set_facecolor(remappedBackground)
 
-  ax.spines['bottom'].set_color('white')
-  # ax.spines['top'].set_color('white')
-  ax.spines['left'].set_color('white')
-  # ax.spines['right'].set_color('white')
+    ax.spines['bottom'].set_color('white')
+    # ax.spines['top'].set_color('white')
+    ax.spines['left'].set_color('white')
+    # ax.spines['right'].set_color('white')
 
-  # ax.xaxis.label.set_color('red')
-  ax.tick_params(axis='x', colors='white')
-  ax.tick_params(axis='y', colors='white')
+    # ax.xaxis.label.set_color('red')
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
 
-  ax.plot(df["Close"], linewidth=3)
+    ax.plot(df["Close"], linewidth=3)
 
-  canvas = agg.FigureCanvasAgg(fig)
-  canvas.draw()
-  renderer = canvas.get_renderer()
-  raw_data = renderer.tostring_rgb()
-  size = canvas.get_width_height()
+    canvas = agg.FigureCanvasAgg(fig)
+    canvas.draw()
+    renderer = canvas.get_renderer()
+    raw_data = renderer.tostring_rgb()
+    size = canvas.get_width_height()
 
-  global stockSurface
-  stockSurface = pygame.image.fromstring(raw_data, size, "RGB")
+    global stockSurface
+    stockSurface = pygame.image.fromstring(raw_data, size, "RGB")
 
   global stockTimer
   stockTimer = threading.Timer(5, createStockChart)
