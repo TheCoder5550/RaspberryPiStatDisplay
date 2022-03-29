@@ -66,8 +66,8 @@ defaultFont = None
 headerFont = pygame.font.SysFont(defaultFont, 80)
 bodyFont = pygame.font.SysFont(defaultFont, 50)
 
-screen = pygame.display.set_mode((320 * 2, 240 * 2))
-# screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# screen = pygame.display.set_mode((320 * 2, 240 * 2))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 pygame.mouse.set_visible(False)
 
